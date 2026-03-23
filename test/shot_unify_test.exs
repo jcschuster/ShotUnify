@@ -285,7 +285,7 @@ defmodule ShotUnifyTest do
 
     solutions = ShotUnify.unify({t1, t2}) |> Enum.to_list()
 
-    assert not Enum.empty(solutions)
+    assert not Enum.empty?(solutions)
 
     valid_projection_found =
       Enum.any?(solutions, fn sol ->
