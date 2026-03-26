@@ -27,7 +27,7 @@ defmodule ShotUnify.MixProject do
   defp deps do
     [
       # Data structures and semantics for HOL objects
-      {:shot_ds, "~> 0.3"},
+      {:shot_ds, "~> 0.3.3"},
       # Code analyzer, duplication checker and security analyzer
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       # Code analyzer and type checker
