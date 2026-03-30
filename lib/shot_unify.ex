@@ -32,22 +32,43 @@ defmodule ShotUnify do
   def unify(term_pairs, depth \\ 10)
 
   def unify(term_pairs, depth) when is_list(term_pairs) do
-    # capture initial scope for cleaning up helper variables
-    initial_scope =
-      Enum.reduce(term_pairs, MapSet.new(), fn {l_id, r_id}, acc ->
-        l_fvars = TF.get_term(l_id).fvars |> MapSet.new()
-        r_fvars = TF.get_term(r_id).fvars |> MapSet.new()
+    Stream.resource(
+      fn ->
+        TF.start_scratchpad()
 
-        acc
-        |> MapSet.union(l_fvars)
-        |> MapSet.union(r_fvars)
-      end)
+        initial_scope =
+          Enum.reduce(term_pairs, MapSet.new(), fn {l_id, r_id}, acc ->
+            l_fvars = TF.get_term(l_id).fvars |> MapSet.new()
+            r_fvars = TF.get_term(r_id).fvars |> MapSet.new()
 
-    initial_state = %{pairs: term_pairs, substs: [], flex: [], depth: depth}
+            acc
+            |> MapSet.union(l_fvars)
+            |> MapSet.union(r_fvars)
+          end)
 
-    [initial_state]
-    |> Stream.unfold(&explore_branch/1)
-    |> Stream.map(&clean_solution(&1, initial_scope))
+        initial_state = %{pairs: term_pairs, substs: [], flex: [], depth: depth}
+
+        {[initial_state], initial_scope}
+      end,
+      fn
+        {[], _scope} = acc ->
+          {:halt, acc}
+
+        {[current | remaining], scope} = acc ->
+          case explore_branch([current | remaining]) do
+            nil ->
+              {:halt, acc}
+
+            {raw_solution, new_stack} ->
+              cleaned_solution = clean_solution(raw_solution, scope)
+              committed_solution = commit_solution(cleaned_solution)
+              {[committed_solution], {new_stack, scope}}
+          end
+      end,
+      fn _acc ->
+        TF.stop_scratchpad()
+      end
+    )
   end
 
   def unify({t1, t2} = pair, depth) when is_integer(t1) and is_integer(t2),
@@ -65,6 +86,20 @@ defmodule ShotUnify do
       end)
 
     %UnifSolution{substitutions: normalized_substs, flex_pairs: normalized_flex}
+  end
+
+  defp commit_solution(%UnifSolution{substitutions: substs, flex_pairs: flex}) do
+    committed_substs =
+      Enum.map(substs, fn subst ->
+        %{subst | term_id: TF.commit_to_global(subst.term_id)}
+      end)
+
+    committed_flex =
+      Enum.map(flex, fn {l_id, r_id} ->
+        {TF.commit_to_global(l_id), TF.commit_to_global(r_id)}
+      end)
+
+    %UnifSolution{substitutions: committed_substs, flex_pairs: committed_flex}
   end
 
   ##############################################################################

@@ -150,7 +150,7 @@ Note that in this case, increasing the depth limit does not yield more solutions
 
 ```elixir
 x = TF.make_free_var_term("X", type_i())
-y = TF.make_free_var_term("Z", type_ii())
+y = TF.make_free_var_term("Y", type_ii())
 c = TF.make_const_term("c", type_i())
 
 unify({x, app(y, c)})
