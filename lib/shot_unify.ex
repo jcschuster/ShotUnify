@@ -202,12 +202,17 @@ defmodule ShotUnify do
 
   # Case: flex-rigid
   defp evaluate_pair(%Term{head: %{kind: :fv}}, %Term{head: %{kind: :co}}, state, rest),
-    do: do_bindings([:imitation, :projection], state, rest)
+    do: do_bindings([:imitation, :projection, :prim_subst], state, rest)
 
   # Case: rigid-flex
   defp evaluate_pair(%Term{head: %{kind: :co}}, %Term{head: %{kind: :fv}}, state, rest) do
     [{l_id, r_id} | _] = state.pairs
-    do_bindings([:imitation, :projection], %{state | pairs: [{r_id, l_id} | rest]}, rest)
+
+    do_bindings(
+      [:imitation, :projection, :prim_subst],
+      %{state | pairs: [{r_id, l_id} | rest]},
+      rest
+    )
   end
 
   # Case: flex-bound
@@ -296,17 +301,27 @@ defmodule ShotUnify do
     TF.memoize(wrapped_term)
   end
 
-  # Generates imitation/projection branches and returns them as a list of new states
+  # Generates imitation/projection/prim-subst branches and returns them as a
+  # list of new states
   defp do_bindings(binding_types, state, rest_pairs) do
     [{flex_id, rigid_id} | _] = state.pairs
 
     flex_head = TF.get_term(flex_id).head
     rigid_head = TF.get_term(rigid_id).head
 
-    generated_substitutions = Bindings.generic_binding(flex_head, rigid_head, binding_types)
+    standard_substs = Bindings.generic_binding(flex_head, rigid_head, binding_types)
+
+    prim_substs =
+      if :prim_subst in binding_types do
+        Bindings.prim_subst_bindings(flex_head, rigid_head)
+      else
+        []
+      end
+
+    all_substitutions = standard_substs ++ prim_substs
 
     new_branches =
-      Enum.map(generated_substitutions, fn subst ->
+      Enum.map(all_substitutions, fn subst ->
         state
         |> then(&apply_substitution(subst, &1, [{flex_id, rigid_id} | rest_pairs]))
         |> Map.update!(:depth, &(&1 - 1))
