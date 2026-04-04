@@ -1,4 +1,4 @@
-# Demo of the ShotUnify Package
+# Demo of the ShotUn Package
 
 ```elixir
 Mix.install([
