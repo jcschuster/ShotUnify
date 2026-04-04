@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:shot_unify, path: Path.join(__DIR__, "..")}
+  {:shot_un, "~> 0.1.0"}
 ])
 ```
 
@@ -20,10 +20,10 @@ alias ShotDs.Stt.TermFactory, as: TF
 ```
 
 ```elixir
-import ShotUnify
+import ShotUn
 ```
 
-## Church Numerals
+## Example: Church Numerals
 
 In simple type theory, church numerals are defined as lambda terms accepting a _successor function_ $s_{\iota\to\iota}$ and a _starting point_ $z_\iota$ which return the $n$-fold application of $s$ to $z$. E.g., the numeral for $0$ is $\lambda s z. z$, for $1$ $\lambda s z. s z$, for $2$ $\lambda s z. s (s z)$ and so on.
 
