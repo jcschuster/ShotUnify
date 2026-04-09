@@ -19,11 +19,11 @@ unification is already undecidable for second-order logic.
 ### Unification Problems
 
 Generally, there are three configurations of unification problems for two given
-formulae:
+higher-order terms:
 
-- _rigid-rigid_: The head symbols of both formulae are constant.
+- _rigid-rigid_: The head symbols of both terms are constant.
 - _flex-rigid_: One head symbol is variable, the other constant.
-- _flex-flex_: The head symbols of both formulae are variable.
+- _flex-flex_: The head symbols of both terms are variable.
 
 ### Pre-unification
 
@@ -32,7 +32,7 @@ Higher-order pre-unification
 semi-decision procedure for this problem by not unifying _flex-flex_ pairs and
 instead returning them as constraints (there are infinitely many common
 instances). The semi-decidability stems from _flex-rigid_ pairs. Certain
-formulae might require a very complex composition of _imitation_ and
+terms might require a very complex composition of _imitation_ and
 _projection_ bindings, while for others we might only be certain no solution
 exists after exhausting this infinite search space. Without a depth bound, there
 is hence no termination guarantee.
