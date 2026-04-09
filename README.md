@@ -1,8 +1,8 @@
-# ShotUnify
+# ShotUn
 
-**ShotUnify** adapts the unification algorithm developed in the library
-[_HOL_](https://hexdocs.pm/hol/readme.html) to the data structures and semantics
-of [_ShotDs_](https://hexdocs.pm/shot_ds/readme.html).
+**ShotUn** adapts the higher-order unification algorithm developed in the
+library [_HOL_](https://hexdocs.pm/hol/readme.html) to the data structures and
+semantics of [_ShotDs_](https://hexdocs.pm/shot_ds/readme.html).
 
 This package was developed at the
 [University of Bamberg](https://www.uni-bamberg.de/en/) with the
@@ -67,13 +67,13 @@ type.
 
 ## Installation
 
-The package can be installed by adding `shot_unify` to your list of dependencies
-in `mix.exs`:
+The package can be installed by adding `shot_un` to your list of dependencies in
+`mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:shot_unify, "~> 0.1.0"}
+    {:shot_un, "~> 0.1"}
   ]
 end
 ```
