@@ -13,7 +13,7 @@ This package was developed at the
 Higher-order unification is the task of determining the common instances of two
 given higher-order terms, i.e., a complete set of unifiers (substitutions) that
 represent solutions to the given unification problem. However,
-[Goldfarb (1981)](<https://doi.org/10.1016/0304-3975(81)90040-2>) has shown that
+[Goldfarb (1981)](https://doi.org/10.1016/0304-3975(81)90040-2) has shown that
 unification is already undecidable for second-order logic.
 
 ### Unification Problems
@@ -28,7 +28,7 @@ higher-order terms:
 ### Pre-unification
 
 Higher-order pre-unification
-[(Huet, 1975)](<https://doi.org/10.1016/0304-3975(75)90011-0>) describes a
+[(Huet, 1975)](https://doi.org/10.1016/0304-3975(75)90011-0) describes a
 semi-decision procedure for this problem by not unifying _flex-flex_ pairs and
 instead returning them as constraints (there are infinitely many common
 instances). The semi-decidability stems from _flex-rigid_ pairs. Certain
