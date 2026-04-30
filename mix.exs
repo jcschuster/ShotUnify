@@ -27,7 +27,7 @@ defmodule ShotUn.MixProject do
   defp deps do
     [
       # Data structures and semantics for HOL objects
-      {:shot_ds, "~> 1.0"},
+      {:shot_ds, github: "jcschuster/ShotDs"},
       # Code analyzer, duplication checker and security analyzer
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       # Code analyzer and type checker
