@@ -92,6 +92,5 @@ defmodule ShotUn.MatchingTest do
 
       assert [] == Matching.match({a, b}) |> Enum.to_list()
     end
-
   end
 end

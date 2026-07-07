@@ -202,7 +202,15 @@ defmodule ShotUn.Pattern do
   defp decompose_rigid(%Term{head: lh} = left, %Term{head: rh} = right, rest, substs, parent_id) do
     cond do
       lh.kind == :co and rh.kind == :co and lh == rh ->
-        do_decompose(left, right, rest, substs, :decompose_const, to_string(lh.name), parent_id)
+        do_decompose(
+          left,
+          right,
+          rest,
+          substs,
+          :decompose_const,
+          Tracer.format_const_name(lh.name),
+          parent_id
+        )
 
       lh.kind == :bv and rh.kind == :bv and
           Internal.same_bound_slot?(left, lh, right, rh) ->
@@ -251,10 +259,21 @@ defmodule ShotUn.Pattern do
         case invert_root(rigid_term, index_to_pos, n, f_head) do
           {:ok, body_id, prunings} ->
             sigma_f = build_sigma(f_head, body_id, arg_indices)
-            apply_and_continue([sigma_f | prunings], rest, substs, :invert, fmt_subst(sigma_f), parent_id)
 
-          {:error, :occurs} -> record_fail_and_error(parent_id, :occurs)
-          {:error, _} -> record_fail_and_error(parent_id, :invert_fail)
+            apply_and_continue(
+              [sigma_f | prunings],
+              rest,
+              substs,
+              :invert,
+              fmt_subst(sigma_f),
+              parent_id
+            )
+
+          {:error, :occurs} ->
+            record_fail_and_error(parent_id, :occurs)
+
+          {:error, _} ->
+            record_fail_and_error(parent_id, :invert_fail)
         end
 
       {:error, _} ->
@@ -410,6 +429,7 @@ defmodule ShotUn.Pattern do
       {:rigid, head}
     else
       outer = k - depth
+
       case Map.fetch(mapping, outer) do
         {:ok, pos} ->
           n = map_size(mapping)
@@ -589,7 +609,13 @@ defmodule ShotUn.Pattern do
   # FLEX-FLEX SAME HEAD (alias rule)
   ##############################################################################
 
-  defp alias_rule(%Term{head: head, args: l_args, bvars: l_bvars}, %Term{args: r_args, bvars: r_bvars}, rest, substs, parent_id) do
+  defp alias_rule(
+         %Term{head: head, args: l_args, bvars: l_bvars},
+         %Term{args: r_args, bvars: r_bvars},
+         rest,
+         substs,
+         parent_id
+       ) do
     # F(x_1, …, x_n) =? F(y_1, …, y_n). Wrap both arg lists in their
     # respective outer-bvar contexts so we get consistent outer indices.
     l_indices = Enum.map(l_args, &Fragment.outer_bvar_index/1)
@@ -625,8 +651,13 @@ defmodule ShotUn.Pattern do
   # FLEX-FLEX DIFFERENT HEADS (intersection rule)
   ##############################################################################
 
-  defp intersection_rule(%Term{head: f_head, args: l_args} = l_term,
-                         %Term{head: g_head, args: r_args} = r_term, rest, substs, parent_id) do
+  defp intersection_rule(
+         %Term{head: f_head, args: l_args} = l_term,
+         %Term{head: g_head, args: r_args} = r_term,
+         rest,
+         substs,
+         parent_id
+       ) do
     l_indices = Enum.map(l_args, &Fragment.outer_bvar_index/1)
     r_indices = Enum.map(r_args, &Fragment.outer_bvar_index/1)
 

@@ -1,7 +1,7 @@
 defmodule ShotUn.MixProject do
   use Mix.Project
 
-  @version "0.1.9"
+  @version "0.1.10"
   @source_url "https://github.com/jcschuster/ShotUn"
 
   def project do
@@ -28,7 +28,7 @@ defmodule ShotUn.MixProject do
   defp deps do
     [
       # Data structures and semantics for HOL objects
-      {:shot_ds, "~> 1.2"},
+      {:shot_ds, "~> 1.2.5"},
       # Code analyzer, duplication checker and security analyzer
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       # Code analyzer and type checker

@@ -180,7 +180,7 @@ For the simple $X \overset{?}{=} c$ problem the trace is a linear chain `init -.
 
 ## Visualization: branching on imitation and projection
 
-The flex-rigid problem $X~a~a \overset{?}{=} f~a~a$ revisits the nine-solution example. The top-level projections substitute $X$ by $\lambda \lambda.~1$ or $\lambda \lambda.~2$, both collapsing the equation to $a \overset{?}{=} f~a~a$ which is a rigid clash; those branches are pruned. Only the imitation $X \leftarrow \lambda \lambda.~f~H_1~H_2$ survives, and each $H_i$ then branches three ways (imitation through $a$, projection onto either argument), producing the 3 × 3 = 9 solution leaves visible in the diagram. Branching choice points use solid arrows (`==>`); linear continuations use dotted arrows (`-.->`).
+The flex-rigid problem $X~a~a \overset{?}{=} f~a~a$ revisits the nine-solution example. The top-level projections substitute $X$ by $\lambda \lambda.~1$ or $\lambda \lambda.~2$, both collapsing the equation to $a \overset{?}{=} f~a~a$ which is a rigid clash; those branches are pruned. Only the imitation $X \leftarrow \lambda \lambda.~f~H_1~H_2$ survives, and each $H_i$ then branches three ways (imitation through $a$, projection onto either argument), producing the $3 \cdot 3 = 9$ solution leaves visible in the diagram. Branching choice points use solid arrows (`==>`); linear continuations use dotted arrows (`-.->`).
 
 <!-- livebook:{"output_size":"full"} -->
 

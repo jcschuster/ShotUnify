@@ -207,7 +207,12 @@ defmodule ShotUn.Matching do
        ) do
     case Internal.decompose(left, right) do
       {:ok, new_pairs} ->
-        record_step_next(:decompose_const, new_pairs ++ rest, state, to_string(c.name))
+        record_step_next(
+          :decompose_const,
+          new_pairs ++ rest,
+          state,
+          Tracer.format_const_name(c.name)
+        )
 
       :error ->
         fail(state, :no_decompose, "head=#{c.name}")
@@ -313,7 +318,10 @@ defmodule ShotUn.Matching do
 
       _ ->
         branches =
-          Enum.map(substs, &build_binding_branch(&1, state, flex_id, rigid_id, rigid_head, rest_pairs))
+          Enum.map(
+            substs,
+            &build_binding_branch(&1, state, flex_id, rigid_id, rigid_head, rest_pairs)
+          )
 
         {:branch, branches}
     end

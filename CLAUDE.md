@@ -19,7 +19,7 @@ mix run bench/benchmark.exs        # unification micro-benchmarks
 mix run bench/overhead.exs         # scratchpad/factory overhead probe
 ```
 
-CI (`.github/workflows/elixir.yml`) runs `mix credo`, `mix dialyzer`, `mix test` on Elixir 1.19 / OTP 28. Match that toolchain locally when reproducing failures.
+CI (`.github/workflows/elixir.yml`) runs `mix credo`, `mix dialyzer`, `mix test` on Elixir 1.20 / OTP 28. Match that toolchain locally when reproducing failures.
 
 ## Architecture
 

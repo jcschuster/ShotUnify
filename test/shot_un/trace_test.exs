@@ -222,7 +222,10 @@ defmodule ShotUn.TraceTest do
       assert output =~ "graph TD"
       assert output =~ "classDef start"
       assert output =~ "classDef solution"
-      assert output =~ "★ solution"
+      # Prose runs are split one word per `\text{…}` (to avoid nbsp in
+      # KaTeX's MathML output), so the label carries the star and the
+      # word in adjacent `\text{}` blocks.
+      assert output =~ "\\text{★}\\;\\text{solution}"
       assert output =~ "-.->"
       assert output =~ "N0[\""
     end
@@ -248,7 +251,9 @@ defmodule ShotUn.TraceTest do
   end
 
   defp has_solution_leaf?(%Node{kind: :solution}), do: true
-  defp has_solution_leaf?(%Node{children: children}), do: Enum.any?(children, &has_solution_leaf?/1)
+
+  defp has_solution_leaf?(%Node{children: children}),
+    do: Enum.any?(children, &has_solution_leaf?/1)
 
   defp collect_rules(%Node{rule: r, children: cs}) do
     [r | Enum.flat_map(cs, &collect_rules/1)]

@@ -51,7 +51,14 @@ defmodule ShotUn.Internal do
 
     new_tvars = MapSet.union(term.tvars, new_bvar_tvars)
 
-    wrapped_term = %Term{term | bvars: combined_bvars, type: new_type, max_num: new_max_num, tvars: new_tvars}
+    wrapped_term = %Term{
+      term
+      | bvars: combined_bvars,
+        type: new_type,
+        max_num: new_max_num,
+        tvars: new_tvars
+    }
+
     TF.memoize(wrapped_term)
   end
 

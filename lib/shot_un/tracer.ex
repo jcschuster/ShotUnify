@@ -25,12 +25,15 @@ defmodule ShotUn.Tracer do
   # thunk passed to `record/2` is *not* invoked, so formatting costs
   # are skipped entirely.
 
-  alias ShotDs.Util.Formatter
+  alias ShotDs.Data.{Declaration, Substitution}
+  alias ShotDs.Stt.TermFactory, as: TF
+  alias ShotDs.Util.LatexFormatter
   alias ShotUn.Trace
   alias ShotUn.Trace.Node
 
   @key :shot_un_tracer
   @counter_key :next_id
+  @aliases_key :shot_un_aliases
 
   @doc """
   Allocate a fresh per-call ETS table and install its reference in the
@@ -48,6 +51,7 @@ defmodule ShotUn.Tracer do
       ])
 
     Process.put(@key, table)
+    Process.put(@aliases_key, %{})
     :ok
   end
 
@@ -57,6 +61,8 @@ defmodule ShotUn.Tracer do
   """
   @spec stop() :: :ok
   def stop do
+    Process.delete(@aliases_key)
+
     case Process.get(@key) do
       nil ->
         :ok
@@ -204,7 +210,8 @@ defmodule ShotUn.Tracer do
 
   @spec format_term(integer()) :: String.t()
   def format_term(id) when is_integer(id) do
-    Formatter.format_term!(id, true)
+    fvars = fvars_of_term(id)
+    with_scoped_aliases(fvars, fn -> LatexFormatter.format!(id, hide_types: true) end)
   rescue
     _ -> "<term:#{id}>"
   end
@@ -214,15 +221,90 @@ defmodule ShotUn.Tracer do
     Enum.map(pairs, fn {l, r} -> {format_term(l), format_term(r)} end)
   end
 
-  @spec format_subst(ShotDs.Data.Substitution.t()) :: String.t()
-  def format_subst(subst) do
-    Formatter.format_substitution!(subst, true)
+  @spec format_subst(Substitution.t()) :: String.t()
+  def format_subst(%Substitution{fvar: fvar, term_id: term_id} = subst) do
+    fvars = [fvar | fvars_of_term(term_id)]
+    with_scoped_aliases(fvars, fn -> LatexFormatter.format!(subst, hide_types: true) end)
   rescue
     _ -> "<subst>"
   end
 
-  @spec format_substs([ShotDs.Data.Substitution.t()]) :: [String.t()]
+  @spec format_substs([Substitution.t()]) :: [String.t()]
   def format_substs(substs) do
     Enum.map(substs, &format_subst/1)
+  end
+
+  ##############################################################################
+  # FRESH-VARIABLE ALIASING
+  #
+  # Fresh higher-order metas are stored with `reference()` names in
+  # their `Declaration`. `LatexFormatter` would otherwise fall back to
+  # `V_{short_ref(ref)}` — unreadable strings like `V_{1S4IST}`.
+  #
+  # When a tracer session is active, each new ref-named fvar is
+  # interned into a per-call map (keyed by `@aliases_key` in the
+  # process dict) with a raw-LaTeX nickname `H^{n}`. That map is then
+  # installed via `LatexFormatter.with_latex_aliases/2` for the
+  # duration of each format call, so `LatexFormatter` splices the
+  # nickname in verbatim (no `escape_name` — braces would otherwise be
+  # escaped to `\{`/`\}` and break the `^{…}` superscript group).
+  #
+  # `map_size(map) + 1` gives stable numbering within one tracer
+  # session: any given ref keeps the same superscript across every
+  # place it appears in the trace.
+  ##############################################################################
+
+  defp fvars_of_term(id) when is_integer(id) do
+    case TF.get_term(id) do
+      {:ok, %{fvars: fvars}} -> MapSet.to_list(fvars)
+      _ -> []
+    end
+  end
+
+  defp with_scoped_aliases(fvars, fmt_fn) do
+    case Process.get(@aliases_key) do
+      nil ->
+        fmt_fn.()
+
+      current ->
+        merged = intern_refs(current, fvars)
+        if merged != current, do: Process.put(@aliases_key, merged)
+        LatexFormatter.with_latex_aliases(merged, fmt_fn)
+    end
+  end
+
+  defp intern_refs(current, fvars) do
+    Enum.reduce(fvars, current, fn
+      %Declaration{name: n}, acc when is_reference(n) ->
+        if Map.has_key?(acc, n) do
+          acc
+        else
+          Map.put(acc, n, "H^{" <> Integer.to_string(map_size(acc) + 1) <> "}")
+        end
+
+      _decl, acc ->
+        acc
+    end)
+  end
+
+  @doc """
+  LaTeX for a raw constant name (used in `note` fields). Wraps the name
+  in `\\mathrm{…}` so it renders upright in math mode, matching how
+  `LatexFormatter` renders non-logical constants.
+  """
+  @spec format_const_name(String.t() | atom()) :: String.t()
+  def format_const_name(name) do
+    escaped =
+      name
+      |> to_string()
+      |> String.replace("_", ~S(\_))
+      |> String.replace("#", ~S(\#))
+      |> String.replace("$", ~S(\$))
+      |> String.replace("%", ~S(\%))
+      |> String.replace("&", ~S(\&))
+      |> String.replace("{", ~S(\{))
+      |> String.replace("}", ~S(\}))
+
+    "\\mathrm{" <> escaped <> "}"
   end
 end
