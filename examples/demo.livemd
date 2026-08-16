@@ -2,7 +2,7 @@
 
 ```elixir
 Mix.install([
-  {:shot_un, path: Path.expand("..", __DIR__)},
+  {:shot_un, "~> 0.2"},
   {:kino, "~> 0.19"}
 ])
 ```
@@ -196,7 +196,7 @@ trace |> ShotUn.Trace.Mermaid.render() |> Kino.Mermaid.new()
 
 ## Visualization: pattern unification and second-order matching
 
-`ShotUn.pattern_unify/2` and `ShotUn.match/2` accept the same `vis: true` option. Pattern unification is a single-path work-list rewrite, so its trace is a linear chain — useful to inspect the inversion, alias and intersection rules in action. Below, the flex-flex pair $X \overset{?}{=} Y$ resolves via the *intersection* rule by binding both $X$ and $Y$ to a fresh meta variable.
+`ShotUn.pattern_unify/2` and `ShotUn.match/2` accept the same `vis: true` option. Pattern unification is a single-path work-list rewrite, so its trace is a linear chain — useful to inspect the inversion, alias and intersection rules in action. Below, the flex-flex pair $X \overset{?}{=} Y$ resolves via the _intersection_ rule by binding both $X$ and $Y$ to a fresh meta variable.
 
 ```elixir
 x = TF.make_free_var_term("X", type_i())
