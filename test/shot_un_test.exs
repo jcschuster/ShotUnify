@@ -17,7 +17,7 @@ defmodule ShotUnTest do
     assert %UnifSolution{substitutions: [%{fvar: ^x_decl, term_id: ^c}], flex_pairs: []} =
              solution
 
-    assert to_string(solution) == "substitutions: [c / X]; remaining flex-flex pairs: []"
+    assert to_string(solution) == "substitutions: [X ↦ c]; remaining flex-flex pairs: []"
   end
 
   test "unify/2 keeps flex-flex pairs as deferred constraints" do

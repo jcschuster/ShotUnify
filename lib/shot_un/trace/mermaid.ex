@@ -14,10 +14,10 @@ defmodule ShotUn.Trace.Mermaid do
   Two renderer quirks are worked around at the label-generation layer,
   because Mermaid's Kino/Livebook pipeline hits them both:
 
-    * **`\\` row separators are halved.** Mermaid's quoted-label parser
-      treats `\\` as an escape and emits a single `\`. That would
+    * **`\\\\` row separators are halved.** Mermaid's quoted-label parser
+      treats `\\\\` as an escape and emits a single `\\`. That would
       collapse the KaTeX row break to a literal control-space. We emit
-      `\\\\` (four backslashes) so Mermaid halves it back to the `\\`
+      `\\\\\\\\` (four backslashes) so Mermaid halves it back to the `\\\\`
       KaTeX expects.
 
     * **`~` and `\\ ` produce `&nbsp;` in the KaTeX HTML.** That
