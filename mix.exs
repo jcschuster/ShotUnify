@@ -1,7 +1,7 @@
 defmodule ShotUn.MixProject do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.2.1"
   @source_url "https://github.com/jcschuster/ShotUn"
 
   def project do
@@ -54,12 +54,12 @@ defmodule ShotUn.MixProject do
 
   defp package do
     [
-      licenses: ["MIT"],
+      licenses: ~w(MIT Apache-2.0),
       maintainers: ["Johannes Schuster"],
       links: %{
         "GitHub" => @source_url
       },
-      files: ~w(lib LICENSE mix.exs README.md)
+      files: ~w(lib LICENSE LICENSE-APACHE mix.exs README.md)
     ]
   end
 

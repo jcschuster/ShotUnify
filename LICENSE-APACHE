@@ -1,4 +1,4 @@
-The modules `ShotUnify`, `ShotUnify.Bindings`, and related unification logic are
+The modules `ShotUn`, `ShotUn.Bindings`, and related pre-unification logic are
 derivative works based on the HOL project (https://github.com/Jonaloew/HOL).
 The original code is licensed under the Apache License 2.0, the full text of
 which is provided below.
