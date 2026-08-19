@@ -22,7 +22,8 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 shot_un-*.tar
 
-
 .claude-config
-.claude/
+.claude
+.start_claudeman.sh
+
 bench/
